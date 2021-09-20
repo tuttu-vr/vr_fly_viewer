@@ -11,7 +11,7 @@ bl_info = {
     "description": "You can fly in VR Scene mode with your controller stick",
     "support": "TESTING",
     "warning": "This is limited supported version because VR support for Blender is early preview.",
-    "doc_url": "{BLENDER_MANUAL_URL}/addons/3d_view/vr_scene_inspection.html",
+    "doc_url": "https://github.com/tuttu-vr/vr_fly_viewer",
     "category": "3D View",
 }
 
