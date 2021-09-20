@@ -26,6 +26,34 @@ USER_PATH_RIGHT = '/user/hand/right'
 SPEED_MOVE = 0.1
 SPEED_ROTATION = 0.05
 
+controller_bindings = [
+    {
+        'name': 'windows_mr',
+        'profile': '/interaction_profiles/microsoft/motion_controller',
+        'component_path': '/input/thumbstick',
+    },
+    {
+        'name': 'oculus_touch',
+        'profile': '/interaction_profiles/oculus/touch_controller',
+        'component_path': '/input/thumbstick',
+    },
+    {
+        'name': 'valve_index',
+        'profile': '/interaction_profiles/valve/index_controller',
+        'component_path': '/input/thumbstick',
+    },
+    {
+        'name': 'vive_controller',
+        'profile': '/interaction_profiles/htc/vive_controller',
+        'component_path': '/input/trackpad',
+    },
+    {
+        'name': 'google_daydream',
+        'profile': '/interaction_profiles/google/daydream_controller',
+        'component_path': '/input/trackpad',
+    },
+]
+
 
 class VIEW3D_PT_vr_info(bpy.types.Panel):
     bl_space_type = 'VIEW_3D'
@@ -59,25 +87,19 @@ def create_binding(item, name, profile, component_path):
     return binding
 
 
+def create_bindings(session, item, actionmap):
+    for binding_setting in controller_bindings:
+        binding = create_binding(item, **binding_setting)
+        session.action_binding_create(bpy.context, actionmap, item, binding)
+
+
 def xr_handler(scene):
     session = bpy.context.window_manager.xr_session_state
     actionmap = session.actionmaps.new(session, ACTION_SET_NAME, True)
     item = create_item(actionmap)
     session.action_set_create(bpy.context, actionmap)
     session.action_create(bpy.context, actionmap, item)
-
-    ms_binding = create_binding(
-        item, 'ms_bindings',
-        '/interaction_profiles/microsoft/motion_controller',
-        '/input/thumbstick')
-    session.action_binding_create(bpy.context, actionmap, item, ms_binding)
-
-    oculus_binding = create_binding(
-        item, 'oculus_bindings',
-        '/interaction_profiles/oculus/touch_controller',
-        '/input/thumbstick')
-    session.action_binding_create(bpy.context, actionmap, item, oculus_binding)
-
+    create_bindings(session, item, actionmap)
     session.active_action_set_set(bpy.context, ACTION_SET_NAME)
 
     bpy.app.timers.register(controller_event_handler)
