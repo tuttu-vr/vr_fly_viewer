@@ -8,18 +8,18 @@ bl_info = {
     "author": "tuttu",
     "version": (0, 1, 0),
     "blender": (3, 0, 0),
-    "description": "You can fly in VR Scene mode with your controller stick",
+    "description": "You can fly in VR Scene mode using your controller",
     "support": "TESTING",
-    "warning": "This is limited supported version because VR support for Blender is early preview.",
+    "warning": "This is a limited-supported version because VR support for Blender is an early preview.",
     "doc_url": "https://github.com/tuttu-vr/vr_fly_viewer",
     "category": "3D View",
 }
 
 
-ACTION_SET_NAME = 'test_actions'
+ACTION_SET_NAME = 'vr_fly_view'
 ACTION_NAME = 'move'
 BINDING_THRESHOLD = 0.0001
-COMMAND_CALL_INTERVAL = 0.03
+COMMAND_CALL_INTERVAL = 0.02
 USER_PATH_LEFT = '/user/hand/left'
 USER_PATH_RIGHT = '/user/hand/right'
 
@@ -93,7 +93,7 @@ def create_bindings(session, item, actionmap):
         session.action_binding_create(bpy.context, actionmap, item, binding)
 
 
-def xr_handler(scene):
+def launch_settings(scene):
     session = bpy.context.window_manager.xr_session_state
     actionmap = session.actionmaps.new(session, ACTION_SET_NAME, True)
     item = create_item(actionmap)
@@ -102,6 +102,7 @@ def xr_handler(scene):
     create_bindings(session, item, actionmap)
     session.active_action_set_set(bpy.context, ACTION_SET_NAME)
 
+    # Because I could not find action handler for VR
     bpy.app.timers.register(controller_event_handler)
 
 
@@ -174,7 +175,7 @@ def register():
         bpy.utils.register_class(VIEW3D_PT_vr_info)
         return
 
-    bpy.app.handlers.xr_session_start_pre.append(xr_handler)
+    bpy.app.handlers.xr_session_start_pre.append(launch_settings)
 
 
 def unregister():
@@ -182,7 +183,7 @@ def unregister():
         bpy.utils.unregister_class(VIEW3D_PT_vr_info)
         return
 
-    bpy.app.handlers.xr_session_start_pre.remove(xr_handler)
+    bpy.app.handlers.xr_session_start_pre.remove(launch_settings)
 
 
 if __name__ == "__main__":
